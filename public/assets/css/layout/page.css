@@ -1,0 +1,113 @@
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline; }
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+  display: block; }
+
+body {
+  line-height: 1; }
+
+ol, ul {
+  list-style: none; }
+
+blockquote, q {
+  quotes: none; }
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+  content: '';
+  content: none; }
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0; }
+
+main {
+  padding: 0 30px; }
+
+.series-container-list {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  margin-top: 15px; }
+
+.series-container h2 {
+  width: 100%; }
+
+.results-item {
+  border: solid 1px #eeeeee;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  margin: 10px 5px;
+  overflow: hidden;
+  position: relative;
+  width: calc((100% - 20px)/3 - 2px); }
+
+.results-item:nth-child(3n+0), .results-item:last-child {
+  margin-right: 0; }
+
+.results-item:nth-child(4n+0), .results-item:first-child {
+  margin-left: 0; }
+
+.results-item-favourite {
+  text-shadow: 0 -1px 0 #fff, 0 -1px 0 #fff, 0 1px 0 #fff, 0 1px 0 #fff;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  opacity: .33;
+  transition: all .3s ease-in-out; }
+
+.results-item-favourite:hover, .results-item.favourite .results-item-favourite {
+  text-shadow: none;
+  color: #ffee58;
+  opacity: 1; }
+
+.results-item img {
+  display: block;
+  width: 100%; }
+
+.reader {
+  display: none; }
+
+@media speech {
+  .reader {
+    display: inline; } }
+
+/*.page {
+    background-color: lightblue;
+}
+
+.form-container {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+}
+
+.results-item {
+    & img {
+        cursor: pointer;
+    }    
+} */
+
+/*# sourceMappingURL=page.css.map */
