@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>M2 Ev final</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="./assets/css/main.css" />
+    <link rel="icon" href="./assets/images/favicon.png" />
+  </head>
+
+  <body>
+    <header>
+      <h1>
+        Buscador de series
+      </h1>
+    </header>
+    <main class="main">
+        <div class="form__container">
+            <form class="form__container-form" id="searchForm">
+                <input type="text" id="formQuery" placeholder="Escribe aquí tu serie">
+                <button type="submit">Buscar</button>
+            </form>
+        </div>
+        <div class="series__container" id="favourites">
+            <h2>Mis series Favoritas</h2>
+            <div class="series__container-list img-fav-size"></div>
+        </div>
+        <div class="series__container" id="result">
+            <h2>Resultados de la Busqueda</h2>
+            <div class="series__container-list"></div>
+        </div>
+    </main>
+    <script src="./assets/js/main.js"></script>
+  </body>
+</html>
