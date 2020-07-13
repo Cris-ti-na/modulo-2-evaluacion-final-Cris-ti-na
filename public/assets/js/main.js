@@ -1,44 +1,35 @@
 'use strict';
 
-const API_DATA = {
-    baseUrl: 'http://api.tvmaze.com',
-    endpoint: 'search/shows'
-};
+const API_DATA = 'http://api.tvmaze.com/search/shows';
 
-let favourites = [];
+let shows = [];
+let favourites = getFavouritesFromLocalStorage();
 
-const form = document.getElementById('searchForm');
+const form = document.querySelector('#searchForm');
 
-const setEventListenerToShow = (show, item) => {
-    const {
-        image,
-        name,
-        id
-    } = show;
+function setEventListenerToShow (show, item) {
+    const {image, name, id} = show;
 
-    item.addEventListener('click', e => {
-        e.preventDefault();
+    item.addEventListener('click', event => {
+        event.preventDefault();
         const itemToPush = {id, image, name};
-        if (favourites.some(el => el.id === itemToPush.id)) {
-            favourites = favourites.filter(el => el.id !== itemToPush.id);
+        if (favourites.some(element => element.id === itemToPush.id)) {
+            favourites = favourites.filter(element => element.id !== itemToPush.id);
             item.classList.remove('favourite');
         } else {
-            const favouritesList = document.querySelector('#favourites');
             favourites.push(itemToPush);
             item.classList.add('favourite');
-            renderShow(itemToPush, favouritesList.querySelector('.series-container-list'));
         }
-
+        renderFavourites();
+        renderShows();
+        setFavouritesToLocalStorage();
+        getFavouritesFromLocalStorage();
     });
-
 }
 
-const renderShow = (show, target) => {
-    const {
-        image,
-        name,
-    } = show;
-    const altImage = 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV';
+function renderShow (show, target) {
+    const {image, name, id} = show;
+    const altImage = 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV-SHOW';
     const altText = 'No hay imagen disponible';
     const item = document.createElement('div');
     const template = `
@@ -47,11 +38,14 @@ const renderShow = (show, target) => {
                          title="${name}">
                     <h3>${name}</h3>
                     <div class="results-item-favourite">
-                        <i class="fa fa-star fa-2x"><span class="reader">Mark as Favourite</span></i>
+                        <i class="fa fa-star fa-2x"><span class="star"></span></i>
                     </div>
                 `;
 
     item.classList.add('results-item');
+    if (favourites.some(element => element.id === id)) {
+        item.classList.add('favourite');
+    }
     item.innerHTML = template;
 
     setEventListenerToShow(show, item)
@@ -62,92 +56,55 @@ const renderShow = (show, target) => {
 form.addEventListener('submit', event => {
     event.preventDefault();
     const query = document.getElementById('formQuery').value;
-    const apiUrl = `${API_DATA.baseUrl}/${API_DATA.endpoint}?q=${query}`;
+    const apiUrl = `${API_DATA}?q=${query}`;
     const target = document.querySelector('#result');
 
-    target.querySelector('.series-container-list').innerHTML = '';
+    shows = [];
+
+    target.querySelector('.series__container-list').innerHTML = '';
     fetch(apiUrl)
         .then(res => res.json())
         .then(results => {
             results.forEach(result => {
-                renderShow(result.show, target.querySelector('.series-container-list'));
+                shows.push(result.show);
             });
+
+            renderShows();
         });
 });
-'use strict';
 
-console.log('>> Ready :)');
+function renderFavourites () {
+    const favouritesList = document.querySelector('#favourites .series__container-list');
+    favouritesList.innerHTML = '';
+    favourites.forEach(favourite => {
+        renderShow(favourite, favouritesList)
+    });
+}
 
-const form = document.querySelector('#form');
+function renderShows () {
+    const showsList = document.querySelector('#result .series__container-list');
+    showsList.innerHTML = '';
+    shows.forEach(show => {
+        renderShow(show, showsList)
+    });
+}
 
-let shows = []
-let favourites = []
+function setFavouritesToLocalStorage() {
+    localStorage.setItem('favourites', JSON.stringify(favourites));
+}
 
-form.addEventListener('submit', function(event){
-    event.preventDefault();
-    
-    const resultsList = document.querySelector('#resultsList');
-    resultsList.innerHTML = '';
-    
+function getFavouritesFromLocalStorage() {
+    return JSON.parse(localStorage.getItem('favourites')) || [];
+}
 
-    const search = document.querySelector('#input-search');
-    const searchValue = search.value;
+renderFavourites ();
 
-    const API_DATA = {
-        baseUrl: 'http://api.tvmaze.com',
-        endpoint: 'search/shows'
-    }
-    const apiUrl = `${API_DATA.baseUrl}/${API_DATA.endpoint}?q=${searchValue}`;
 
-    fetch(apiUrl)
-        .then(response => response.json())
-        .then(results => {
-            results.forEach(result => {
-                renderShow(result);
-            })                
-        });
-
-    function renderShow (element) {
-        /*
-        // OPERADOR LÓGICO AND / OR
-        const template = `
-            <div class="results-item">   
-            <img    src="${(element.show.image && element.show.image.original) || 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV'}"
-                    alt="${(element.show.image && element.show.name) || 'No hay imagen disponible'}">
-                <h2>${element.show.name}</h2>
-            </div>
-        `;
-        */
-        
-        // OPERADOR TERNARIO
-        const template = `
-            <img
-                src="${element.show.image ? element.show.image.original : 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV'}"
-                alt="${element.show.image ? element.show.name : 'No hay imagen disponible'}">
-            <h3>${element.show.name}</h3>
-        `;
-        const item = document.createElement('div');
-        item.classList.add('results-item');
-        item.innerHTML = template;
-
-        item.addEventListener ('click', (event) => {
-            if (favourites.includes(element)) {
-                console.log('sí');
-                favourites.splice(favourites.indexOf(element), 1);
-                item.classList.remove('favourite');
-            } else {
-                console.log('no');
-                favourites.push(element);
-                item.classList.add('favourite');
-            }
-            //console.log(favourites);
-        });
-
-        resultsList.appendChild(item);
-
-        const favouritesList = document.querySelector('#favouritesList');
-        favouritesList.innerHTML = 
-    }
-
-});
+/*
+Cuando haga click en el botón
+favourites = []
+renderFavourites();
+renderShows();
+setFavouritesToLocalStorage();
+*/
 //# sourceMappingURL=main.js.map

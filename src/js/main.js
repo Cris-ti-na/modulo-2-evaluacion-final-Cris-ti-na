@@ -1,76 +1,109 @@
 'use strict';
 
-console.log('>> Ready :)');
+const API_DATA = 'http://api.tvmaze.com/search/shows';
 
-const form = document.querySelector('#form');
+let shows = [];
+let favourites = getFavouritesFromLocalStorage();
 
-let shows = []
-let favourites = []
+const form = document.querySelector('#searchForm');
 
-form.addEventListener('submit', function(event){
-    event.preventDefault();
-    
-    const resultsList = document.querySelector('#resultsList');
-    resultsList.innerHTML = '';
-    
+function setEventListenerToShow (show, item) {
+    const {image, name, id} = show;
 
-    const search = document.querySelector('#input-search');
-    const searchValue = search.value;
+    item.addEventListener('click', event => {
+        event.preventDefault();
+        const itemToPush = {id, image, name};
+        if (favourites.some(element => element.id === itemToPush.id)) {
+            favourites = favourites.filter(element => element.id !== itemToPush.id);
+            item.classList.remove('favourite');
+        } else {
+            favourites.push(itemToPush);
+            item.classList.add('favourite');
+        }
+        renderFavourites();
+        renderShows();
+        setFavouritesToLocalStorage();
+        getFavouritesFromLocalStorage();
+    });
+}
 
-    const API_DATA = {
-        baseUrl: 'http://api.tvmaze.com',
-        endpoint: 'search/shows'
+function renderShow (show, target) {
+    const {image, name, id} = show;
+    const altImage = 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV-SHOW';
+    const altText = 'No hay imagen disponible';
+    const item = document.createElement('div');
+    const template = `
+                    <img src="${image ? image.original : altImage}" 
+                         alt="${image ? name : altText}"
+                         title="${name}">
+                    <h3>${name}</h3>
+                    <div class="results-item-favourite">
+                        <i class="fa fa-star fa-2x"><span class="star"></span></i>
+                    </div>
+                `;
+
+    item.classList.add('results-item');
+    if (favourites.some(element => element.id === id)) {
+        item.classList.add('favourite');
     }
-    const apiUrl = `${API_DATA.baseUrl}/${API_DATA.endpoint}?q=${searchValue}`;
+    item.innerHTML = template;
 
+    setEventListenerToShow(show, item)
+
+    target.appendChild(item);
+}
+
+form.addEventListener('submit', event => {
+    event.preventDefault();
+    const query = document.getElementById('formQuery').value;
+    const apiUrl = `${API_DATA}?q=${query}`;
+    const target = document.querySelector('#result');
+
+    shows = [];
+
+    target.querySelector('.series__container-list').innerHTML = '';
     fetch(apiUrl)
-        .then(response => response.json())
+        .then(res => res.json())
         .then(results => {
             results.forEach(result => {
-                renderShow(result);
-            })                
+                shows.push(result.show);
+            });
+
+            renderShows();
         });
-
-    function renderShow (element) {
-        /*
-        // OPERADOR LÓGICO AND / OR
-        const template = `
-            <div class="results-item">   
-            <img    src="${(element.show.image && element.show.image.original) || 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV'}"
-                    alt="${(element.show.image && element.show.name) || 'No hay imagen disponible'}">
-                <h2>${element.show.name}</h2>
-            </div>
-        `;
-        */
-        
-        // OPERADOR TERNARIO
-        const template = `
-            <img
-                src="${element.show.image ? element.show.image.original : 'https://via.placeholder.com/210x295/ffffff/666666/?text=TV'}"
-                alt="${element.show.image ? element.show.name : 'No hay imagen disponible'}">
-            <h3>${element.show.name}</h3>
-        `;
-        const item = document.createElement('div');
-        item.classList.add('results-item');
-        item.innerHTML = template;
-
-        item.addEventListener ('click', (event) => {
-            if (favourites.includes(element)) {
-                console.log('sí');
-                favourites.splice(favourites.indexOf(element), 1);
-                item.classList.remove('favourite');
-            } else {
-                console.log('no');
-                favourites.push(element);
-                item.classList.add('favourite');
-            }
-            //console.log(favourites);
-        });
-
-        resultsList.appendChild(item);
-
-        const favouritesList = document.querySelector('#favouritesList');
-        favouritesList.innerHTML = 
-    }
-
 });
+
+function renderFavourites () {
+    const favouritesList = document.querySelector('#favourites .series__container-list');
+    favouritesList.innerHTML = '';
+    favourites.forEach(favourite => {
+        renderShow(favourite, favouritesList)
+    });
+}
+
+function renderShows () {
+    const showsList = document.querySelector('#result .series__container-list');
+    showsList.innerHTML = '';
+    shows.forEach(show => {
+        renderShow(show, showsList)
+    });
+}
+
+function setFavouritesToLocalStorage() {
+    localStorage.setItem('favourites', JSON.stringify(favourites));
+}
+
+function getFavouritesFromLocalStorage() {
+    return JSON.parse(localStorage.getItem('favourites')) || [];
+}
+
+renderFavourites ();
+
+
+/*
+Cuando haga click en el botón
+favourites = []
+renderFavourites();
+renderShows();
+setFavouritesToLocalStorage();
+*/
